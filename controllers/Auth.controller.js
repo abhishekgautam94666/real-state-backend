@@ -1,0 +1,150 @@
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { User } from "../model/user.model.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import jwt from "jsonwebtoken";
+
+const checStatus = asyncHandler((req, res) => {
+  res.status(200).json({ success: true });
+});
+
+const SignUp = asyncHandler(async (req, res) => {
+  const { username, email, password } = req.body;
+  if (!username || !email || !password) {
+    throw new ApiError(404, "Alll field are required");
+  }
+
+  const exitUser = await User.findOne({
+    $or: [{ username }, { email }],
+  });
+
+  if (exitUser) {
+    throw new ApiError(409, "User are already exit");
+  }
+
+  const userCreated = await User.create({
+    email,
+    password,
+    username: username.toLowerCase(),
+  });
+
+  if (!userCreated) {
+    throw new ApiError(500, "something wrong register User");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, userCreated, "User register Successfully"));
+});
+
+const signIn = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    throw new ApiError(400, "both email and password are required");
+  }
+
+  const userfind = await User.findOne({ email });
+  if (!userfind) {
+    throw new ApiError(400, "pleas enter correct email user not found");
+  }
+
+  const checkCorrectPassword = userfind.isPasswordCorrect(password);
+  if (!checkCorrectPassword) {
+    throw new ApiError(400, "incorect password wrong credential");
+  }
+
+  const access_token = jwt.sign(
+    { id: userfind._id },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+    }
+  );
+
+  const logedInUser = await User.findById(userfind._id).select("-password");
+
+  const option = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res
+    .status(200)
+    .cookie("access_token", access_token, option)
+    .json(new ApiResponse(200, logedInUser, "user logged in successfully"));
+});
+
+const signOut = asyncHandler(async (req, res) => {
+  const option = {
+    httpOnly: true,
+    secure: true,
+  };
+  try {
+    return res
+      .status(200)
+      .clearCookie("access_token", option)
+      .json(new ApiResponse(200, "User loggedIn successfully"));
+  } catch (error) {
+    throw new ApiError(400, "some problem loggeOut");
+  }
+});
+
+const google = asyncHandler(async (req, res) => {
+  const { email, username, photoUrl } = req.body;
+  if (!email || !username) {
+    throw new ApiError(400, "All fields are required email password ");
+  }
+
+  try {
+    const user = await User.findOne({ email });
+    if (user) {
+      const token = jwt.sign(
+        { id: user._id },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+      );
+
+      const newUser = await User.findById(user._id).select("-password");
+
+      return res
+        .status(200)
+        .cookie("access_token", token, { httpOnly: true, secure: true })
+        .json(new ApiResponse(200, newUser, "google login success"));
+    } else {
+      const generatedPassword =
+        Math.random().toString(36).slice(-8) +
+        Math.random().toString(36).slice(-8);
+
+      const createUser = await User.create({
+        username,
+        email,
+        password: generatedPassword,
+        avatar: photoUrl ? photoUrl : "",
+      });
+
+      if (!createUser) {
+        throw new ApiError(400, "some problem creating user");
+      }
+
+      const token = jwt.sign(
+        { id: createUser._id },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+      );
+
+      if (!token) {
+        throw new ApiError(400, "token not generate");
+      }
+
+      const newUser = await User.findById(createUser._id).select("-password");
+
+      res
+        .status(200)
+        .cookie("access_token", token, { httpOnly: true, secure: true })
+        .json(new ApiResponse(200, newUser, "user login successfully"));
+    }
+  } catch (error) {
+    throw new ApiError(400, error.message);
+  }
+});
+export { SignUp, signIn, signOut, checStatus, google };
