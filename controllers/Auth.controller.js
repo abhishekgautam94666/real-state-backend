@@ -75,15 +75,11 @@ const signIn = asyncHandler(async (req, res) => {
 });
 
 const signOut = asyncHandler(async (req, res) => {
-  const option = {
-    httpOnly: true,
-    secure: true,
-  };
   try {
-    return res
+    res
       .status(200)
-      .clearCookie("access_token", option)
-      .json(new ApiResponse(200, "User loggedIn successfully"));
+      .clearCookie("access_token")
+      .json(new ApiResponse(200, "User loggeOut successfully"));
   } catch (error) {
     throw new ApiError(400, "some problem loggeOut");
   }

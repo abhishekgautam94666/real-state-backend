@@ -29,3 +29,6 @@ app.use("/api/v1/users", authRouter);
 
 import userRouter from "./routes/user.routes.js";
 app.use("/api/v1/users1", userRouter);
+
+import listingRouter from "./routes/listing.routes.js";
+app.use("/api/v1/listings", listingRouter);
