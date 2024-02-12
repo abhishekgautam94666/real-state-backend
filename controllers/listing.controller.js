@@ -31,7 +31,6 @@ const getUserListings = asyncHandler(async (req, res) => {
       if (!userList) {
         throw new ApiError(400, "Not Found user listing");
       }
-      console.log(userList);
       return res
         .status(200)
         .json(new ApiResponse(200, userList, "userListing fech successfully"));
@@ -43,4 +42,79 @@ const getUserListings = asyncHandler(async (req, res) => {
   }
 });
 
-export { createListing, getUserListings };
+const deleteListing = asyncHandler(async (req, res) => {
+  const listing = await Listing.findById(req.params.id);
+  if (!listing) {
+    throw new ApiError(404, "listing not fonund");
+  }
+  if (req.user._id != listing.userRef) {
+    throw new ApiError(404, "you can only delete your own listings!");
+  }
+
+  try {
+    const deleteListing = await Listing.findByIdAndDelete(req.params.id);
+    if (!deleteListing) {
+      throw new ApiError(404, "something went wrong deleted listing");
+    }
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, deleteListing, "deleted listing successfully")
+      );
+  } catch (error) {
+    throw new ApiError(404, error.message);
+  }
+});
+
+const updateListing = asyncHandler(async (req, res) => {
+  const listing = await Listing.findById(req.params.id);
+  if (!listing) {
+    throw new ApiError(404, "not found listing");
+  }
+
+  if (req.user._id != listing.userRef) {
+    throw new ApiError(404, "you can change only own listing");
+  }
+
+  try {
+    const updatedListing = await Listing.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    if (!updatedListing) {
+      throw new ApiError(404, "while erroring updating listing");
+    }
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, updatedListing, "Listing updated successfully")
+      );
+  } catch (error) {
+    throw new ApiError(404, error.message);
+  }
+});
+
+const getListing = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    throw new ApiError(404, "not found id");
+  }
+
+  const listing = await Listing.findById(id);
+  if (!listing) {
+    throw new ApiError(404, "not found listing");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, listing, "fech listing successfully"));
+});
+
+export {
+  createListing,
+  getUserListings,
+  deleteListing,
+  updateListing,
+  getListing,
+};
