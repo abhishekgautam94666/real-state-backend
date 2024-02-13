@@ -58,4 +58,20 @@ const deleteUser = asyncHandler(async (req, res) => {
   }
 });
 
-export { updateUser, deleteUser };
+const getUser = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, user, "user feched succefully"));
+  } catch (error) {
+    throw new ApiError(404, error.message);
+  }
+});
+
+export { updateUser, deleteUser, getUser };

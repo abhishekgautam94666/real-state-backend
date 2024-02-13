@@ -6,6 +6,7 @@ import {
   getListing,
   getUserListings,
   updateListing,
+  getListings,
 } from "../controllers/listing.controller.js";
 
 const router = Router();
@@ -14,4 +15,5 @@ router.route("/listing/:id").get(verifyJwt, getUserListings);
 router.route("/delete/:id").delete(verifyJwt, deleteListing);
 router.route("/update/:id").put(verifyJwt, updateListing);
 router.route("/get/:id").get(getListing);
+router.route("/get").get(getListings);
 export default router;
