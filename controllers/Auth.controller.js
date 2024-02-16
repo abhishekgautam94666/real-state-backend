@@ -62,7 +62,7 @@ const signIn = asyncHandler(async (req, res) => {
 
   const option = {
     httpOnly: true,
-    maxAge: 24 * 24 * 60 * 60 * 60 * 1000,
+    maxAge: 24 * 24 * 60 * 60 * 1000,
     sameSite: "none",
     secure: true, // same site noone h to secure true hona chahiye
   };
@@ -132,7 +132,7 @@ const google = asyncHandler(async (req, res) => {
       const option = {
         httpOnly: true,
         sameSite: "none",
-        maxAge: 24 * 24 * 60 * 60 * 60 * 1000,
+        maxAge: 24 * 24 * 60 * 60 * 1000,
         secure: true,
       };
 
