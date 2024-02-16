@@ -63,8 +63,6 @@ const signIn = asyncHandler(async (req, res) => {
   const option = {
     httpOnly: true,
     maxAge: 24 * 24 * 60 * 60 * 1000,
-    sameSite: "none",
-    secure: true, // same site noone h to secure true hona chahiye
   };
 
   return res
@@ -119,8 +117,7 @@ const google = asyncHandler(async (req, res) => {
 
       const token = jwt.sign(
         { id: createUser._id },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+        process.env.ACCESS_TOKEN_SECRET
       );
 
       if (!token) {
@@ -131,9 +128,7 @@ const google = asyncHandler(async (req, res) => {
 
       const option = {
         httpOnly: true,
-        sameSite: "none",
         maxAge: 24 * 24 * 60 * 60 * 1000,
-        secure: true,
       };
 
       res
