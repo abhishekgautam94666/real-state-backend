@@ -53,20 +53,18 @@ const signIn = asyncHandler(async (req, res) => {
     throw new ApiError(400, "incorect password wrong credential");
   }
 
-
   const access_token = jwt.sign(
     { id: userfind._id },
-    process.env.ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-    }
+    process.env.ACCESS_TOKEN_SECRET
   );
 
   const logedInUser = await User.findById(userfind._id).select("-password");
 
   const option = {
     httpOnly: true,
-    secure: true,
+    maxAge: 24 * 24 * 60 * 60 * 60 * 1000,
+    sameSite: "none",
+    secure: true, // same site noone h to secure true hona chahiye
   };
 
   return res
@@ -95,11 +93,7 @@ const google = asyncHandler(async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (user) {
-      const token = jwt.sign(
-        { id: user._id },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
-      );
+      const token = jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN_SECRET);
 
       const newUser = await User.findById(user._id).select("-password");
 
@@ -135,9 +129,16 @@ const google = asyncHandler(async (req, res) => {
 
       const newUser = await User.findById(createUser._id).select("-password");
 
+      const option = {
+        httpOnly: true,
+        sameSite: "none",
+        maxAge: 24 * 24 * 60 * 60 * 60 * 1000,
+        secure: true,
+      };
+
       res
         .status(200)
-        .cookie("access_token", token, { httpOnly: true, secure: true })
+        .cookie("access_token", token, option)
         .json(new ApiResponse(200, newUser, "user login successfully"));
     }
   } catch (error) {
