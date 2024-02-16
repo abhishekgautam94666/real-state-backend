@@ -14,6 +14,14 @@ config({
   path: "./.env",
 });
 
+app.use(
+  cors({
+    origin: [process.env.FRONTEND_URL],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+
 connectDB()
   .then(() => {
     app.listen(process.env.PORT || 9000, () => {
@@ -23,6 +31,10 @@ connectDB()
   .catch((err) => {
     console.log("MONGODb connection failed !!! ", err);
   });
+
+app.get("/", (req, res) => {
+  res.send("server is working");
+});
 
 import authRouter from "./routes/Auth.routes.js";
 app.use("/api/v1/users", authRouter);

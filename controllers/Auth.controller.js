@@ -53,6 +53,8 @@ const signIn = asyncHandler(async (req, res) => {
     throw new ApiError(400, "incorect password wrong credential");
   }
 
+  console.log(process.env.ACCESS_TOKEN_EXPIRY);
+
   const access_token = jwt.sign(
     { id: userfind._id },
     process.env.ACCESS_TOKEN_SECRET,
@@ -143,4 +145,13 @@ const google = asyncHandler(async (req, res) => {
     throw new ApiError(400, error.message);
   }
 });
-export { SignUp, signIn, signOut, checStatus, google };
+
+const checkCookie = asyncHandler(async (req, res) => {
+  const token = req.cookies?.access_token;
+  if (!token) {
+    return res.status(200).json(new ApiResponse(200, "tokenNotExit"));
+  }
+  return res.status(200).json(new ApiResponse(200, "tokenExit"));
+});
+
+export { SignUp, signIn, signOut, checStatus, google, checkCookie };
