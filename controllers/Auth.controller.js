@@ -53,7 +53,6 @@ const signIn = asyncHandler(async (req, res) => {
     throw new ApiError(400, "incorect password wrong credential");
   }
 
-  console.log(process.env.ACCESS_TOKEN_EXPIRY);
 
   const access_token = jwt.sign(
     { id: userfind._id },
