@@ -7,7 +7,6 @@ import {
   checkCookie,
   root,
 } from "../controllers/Auth.controller.js";
-//import { verifyJwt } from "../middlewares/Auth.js";
 
 const router = Router();
 router.route("/test").get(root);
