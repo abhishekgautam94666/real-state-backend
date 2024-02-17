@@ -13,13 +13,7 @@ config({
   path: "./.env",
 });
 
-app.use(
-  cors({
-    origin: [process.env.FRONTEND_URL],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+app.use(cors({}));
 connectDB()
   .then(() => {
     app.listen(process.env.PORT || 9000, () => {
