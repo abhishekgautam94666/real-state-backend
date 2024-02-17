@@ -1,16 +1,16 @@
 import { Router } from "express";
 import {
   SignUp,
-  checStatus,
   google,
   signIn,
   signOut,
   checkCookie,
+  root,
 } from "../controllers/Auth.controller.js";
 //import { verifyJwt } from "../middlewares/Auth.js";
 
 const router = Router();
-router.route("/status").get(checStatus);
+router.route("/test").get(root);
 router.route("/signUp").post(SignUp);
 router.route("/signIn").post(signIn);
 router.route("/signOut").get(signOut);

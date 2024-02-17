@@ -4,8 +4,8 @@ import { User } from "../model/user.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
 
-const checStatus = asyncHandler((req, res) => {
-  res.status(200).json({ success: true });
+const root = asyncHandler(async (_, res) => {
+  return res.send("server is running");
 });
 
 const SignUp = asyncHandler(async (req, res) => {
@@ -149,4 +149,4 @@ const checkCookie = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, "tokenExit"));
 });
 
-export { SignUp, signIn, signOut, checStatus, google, checkCookie };
+export { SignUp, signIn, signOut, google, checkCookie, root };
