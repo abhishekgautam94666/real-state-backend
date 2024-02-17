@@ -62,7 +62,9 @@ const signIn = asyncHandler(async (req, res) => {
 
   const option = {
     httpOnly: true,
+    secure: true,
     maxAge: 24 * 24 * 60 * 60 * 1000,
+    sameSite: "strict",
   };
 
   return res
@@ -75,7 +77,10 @@ const signOut = asyncHandler(async (req, res) => {
   try {
     res
       .status(200)
-      .clearCookie("access_token")
+      .clearCookie("access_token", {
+        secure: true,
+        sameSite: "strict",
+      })
       .json(new ApiResponse(200, "User loggeOut successfully"));
   } catch (error) {
     throw new ApiError(400, "some problem loggeOut");
@@ -97,7 +102,12 @@ const google = asyncHandler(async (req, res) => {
 
       return res
         .status(200)
-        .cookie("access_token", token, { httpOnly: true, secure: true })
+        .cookie("access_token", token, {
+          httpOnly: true,
+          secure: true,
+          maxAge: 24 * 24 * 60 * 60 * 1000,
+          sameSite: "strict",
+        })
         .json(new ApiResponse(200, newUser, "google login success"));
     } else {
       const generatedPassword =
@@ -128,7 +138,9 @@ const google = asyncHandler(async (req, res) => {
 
       const option = {
         httpOnly: true,
+        secure: true,
         maxAge: 24 * 24 * 60 * 60 * 1000,
+        sameSite: "strict",
       };
 
       res
