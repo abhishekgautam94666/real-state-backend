@@ -13,7 +13,7 @@ config({
   path: "./.env",
 });
 
-app.use(cors({}));
+app.use(cors());
 connectDB()
   .then(() => {
     app.listen(process.env.PORT || 9000, () => {
