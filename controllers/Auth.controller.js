@@ -64,7 +64,7 @@ const signIn = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: true,
     maxAge: 24 * 24 * 60 * 60 * 1000,
-    sameSite: "strict",
+    sameSite: "none",
   };
 
   return res
@@ -79,7 +79,7 @@ const signOut = asyncHandler(async (req, res) => {
       .status(200)
       .clearCookie("access_token", {
         secure: true,
-        sameSite: "strict",
+        sameSite: "none",
       })
       .json(new ApiResponse(200, "User loggeOut successfully"));
   } catch (error) {
@@ -106,7 +106,7 @@ const google = asyncHandler(async (req, res) => {
           httpOnly: true,
           secure: true,
           maxAge: 24 * 24 * 60 * 60 * 1000,
-          sameSite: "strict",
+          sameSite: "none",
         })
         .json(new ApiResponse(200, newUser, "google login success"));
     } else {
@@ -140,7 +140,7 @@ const google = asyncHandler(async (req, res) => {
         httpOnly: true,
         secure: true,
         maxAge: 24 * 24 * 60 * 60 * 1000,
-        sameSite: "strict",
+        sameSite: "none",
       };
 
       res
